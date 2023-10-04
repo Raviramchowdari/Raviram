@@ -1,0 +1,72 @@
+const readline = require('readline');
+const rl = readline.createInterface({
+ input: process.stdin,
+ output: process.stdout
+});
+let users = [];
+let currentUser = null;
+function registerUser() {
+ rl.question("Enter your email: ", (email) => {
+ rl.question("Select your role (admin, borrower, lender): ", (role) => {
+ const user = {
+ email,
+ role,
+ loans: [],
+ payments: []
+ };
+ users.push(user);
+ console.log(User registered: ${email}, Role: ${role});
+ if (role === "borrower") {
+ requestLoan(user);
+ } else if (role === "lender") {
+ confirmPayment(user);
+ } else if (role === "admin") {
+ viewTransactions();
+ }
+ });
+ });
+}
+function requestLoan(user) {
+ rl.question("Enter the loan amount in INR: ", (amount) => {
+ rl.question("Enter the loan duration in months: ", (months) => {
+ let interestRate = 0;
+ if (months >= 1 && months <= 4) {
+ interestRate = 0.05;
+ } else if (months >= 5 && months <= 8) {
+ interestRate = 0.08;
+ } else if (months >= 9 && months <= 12) {
+ interestRate = 0.15;
+ } else {
+ console.log("Invalid loan duration.");
+ return;
+ }
+ const totalAmount = amount * (1 + interestRate);
+ const loan = {
+ amount,
+ duration: months,
+ status: "Pending",
+ interestRate,
+ totalAmount
+ };
+ user.loans.push(loan);
+ console.log(Loan requested: Amount: ${amount} INR, Duration: ${months} months);
+ updateDashboard(user);
+ rl.close();
+ });
+ });
+}
+function confirmPayment(user) {
+ console.log("Lender functionality: Confirm loan payments");
+ rl.close();
+}
+function viewTransactions() {
+ console.log("Admin functionality: View all transactions");
+ rl.close();
+}
+function updateDashboard(user) {
+ console.log(Dashboard for ${user.email}:);
+ console.log(user);
+ rl.close();
+}
+console.log("Welcome to the Loan Management System!");
+registerUser();
